@@ -20,9 +20,7 @@ class BoxFolderOperations {
     public static function doOauth2() {
         $o = self::getOptions();
 
-//        shell_exec("gnome-www-browser https://app.box.com/api/oauth2/authorize?response_type=code\&client_id={$o['client_id']}\&state=security_token%3DKnhMJatFipTAnM0nHlZA");
-//        fwrite(STDOUT, "Did you get the code?");
-//        $code = trim(fgets(STDIN));
+
 
         $code = "12345";
         $result = file_get_contents('https://app.box.com/api/oauth2/token', FALSE, stream_context_create([
