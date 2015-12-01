@@ -22,10 +22,10 @@ class BoxFolder {
     }
 
     /**
-     * Internal helper function, called on itit that stores a JSON/PHP array into 
+     * Internal helper function, called on itit that stores a JSON/PHP array into
      * $this->folder_contents;
-     * 
-     * Attribution: http://stackoverflow.com/a/6609181 gave me a bit of insight 
+     *
+     * Attribution: http://stackoverflow.com/a/6609181 gave me a bit of insight
      * how to begin setting up this call to box's API 2
      */
     private function doGetFolderContents() {
@@ -45,7 +45,7 @@ class BoxFolder {
 
     /**
      * Returns raw folder contents
-     * @return type 
+     * @return type
      */
     public function getFolderContents() {
         return $this->folder_contents;
@@ -72,7 +72,7 @@ class BoxFolder {
     }
 
     /**
-     * Gets only subfolders 
+     * Gets only subfolders
      * @return array of subfolder with name and ids
      */
     public function getFolderItems() {
@@ -90,10 +90,10 @@ class BoxFolder {
     }
 
     /**
-      curl https://api.box.com/2.0/collaborations \
-      -H "Authorization: Bearer ACCESS_TOKEN" \
-      -d '{"item": { "id": "FOLDER_ID", "type": "folder"}, "accessible_by": { "id": "USER_ID", "type": "user" }, "role": "editor"}' \
-      -X POST
+    *  curl https://api.box.com/2.0/collaborations \
+    *  -H "Authorization: Bearer ACCESS_TOKEN" \
+    *  -d '{"item": { "id": "FOLDER_ID", "type": "folder"}, "accessible_by": { "id": "USER_ID", "type": "user" }, "role": "editor"}' \
+    *  -X POST
      */
     public function addUser($email_address, $role = 'viewer uploader') {
 
@@ -101,7 +101,7 @@ class BoxFolder {
         // sanitize data
         $email_address = filter_var($email_address, FILTER_SANITIZE_EMAIL);
 
-        // data 
+        // data
         $d = [
             "item" => [
                 "id" => $this->folderid,
@@ -113,20 +113,22 @@ class BoxFolder {
             "role" => $role,
         ];
 
-        $options = [
-            'http' => [
-                'method' => 'POST',
-                'header' => $this->header_forauth . "\r\n" ,
-                'content' => json_encode($d),
-            ]
-        ];
- 
 
-        $result = file_get_contents($this->box_api_collab_url, false, stream_context_create($options));
+        // cURL magic
+        $ch = curl_init();
+        curl_setopt($ch,CURLOPT_URL,$this->box_api_collab_url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($d));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          $this->header_forauth ,
+        ));
 
-        if (!$result) {
-            error_log("Something went wront with add user");
-        }
+
+        //execute post
+        $result = curl_exec($ch);
+
+        //close connection
+        curl_close($ch);
 
         return $result;
     }
