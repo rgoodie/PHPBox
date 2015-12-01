@@ -39,7 +39,7 @@ class BoxFolder {
     $this->folder_contents = json_decode($result);
 
     if (!$this->folder_contents) {
-      error_log(__CLASS__ . ": Failed to get any useable results from $this->box_api_folder_url ");
+      error_log(__CLASS__ . ": Failed to get any usable results from $this->box_api_folder_url ");
     }
   }
 
